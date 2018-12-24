@@ -4,8 +4,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.0/dist/showdown.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha256-q01RVaHUJiYq9aq0FwkI6GAmMtOmRgToK8aEHHm4Xl8=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha256-CiPSQ9n316ms9u5yYJ092wI+FeybXvesfbnOUvSRvYA=" crossorigin="anonymous"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha256-CiPSQ9n316ms9u5yYJ092wI+FeybXvesfbnOUvSRvYA=" crossorigin="anonymous"></script>
 
 <script type="module" defer>
   import { html, Component, render } from 'https://unpkg.com/htm/preact/standalone.mjs'
@@ -17,14 +18,12 @@
   const defaultPreview = '```\nSelect a document to continue\n```'
 
   const changeFilter = e => {
-    console.log(e)
     filter = e.target.value
     renderApp()
   }
-
   class Search extends Component {
-    render (props, state) {
-      return html`<input type='text' class='search' placeholder='Filter Documents...' value={${filter}} onKeyDown={${e => changeFilter(e)}} />`
+    render ({ search }, state) {
+      return html`<input type='text' class='search' placeholder='Filter Documents...' value={${search}} onInput={${e => changeFilter(e) }} />`
     }
   }
 
@@ -40,15 +39,10 @@
   }
 
   class SideBar extends Component {
-    render({ allFiles }, state) {
+    render({ allFiles, search }, state) {
       return html`
         <div>
-          <div>
-            <${Search} />
-          </div>
-          <div>
-            ${allFiles.map(f => html`<${FileItem} file={${f}} />`)}
-          </div>
+          ${allFiles.map(f => html`<${FileItem} file={${f}} />`)}
         </div>
       `;
     }
@@ -65,14 +59,17 @@
   }
 
   class App extends Component {
-    render ({ allFiles }, state) {
+    render ({ allFiles, search }, state) {
       return html`
-        <div id="main" class="wrapper">
-          <div id="sidebar">
-            <${SideBar} allFiles={${files}} />
-          </div>
-          <div id="preview">
-            <${Preview} />
+        <div id="main">
+          <div><${Search} search={${search}} /></div>
+          <div class="wrapper">
+            <div id="sidebar">
+              <${SideBar} allFiles={${allFiles}} search={${search}} />
+            </div>
+            <div id="preview">
+              <${Preview} />
+            </div>
           </div>
         </div>
       `
@@ -82,20 +79,22 @@
   const renderApp = () => {
     // render the application
     let md = (currentFile || {}).contents || defaultPreview
-    render(html`<${App} allFiles={${files}} />`, document.body)
+
+    // filter files
+    const filtered = filter.length > 0
+      ? files.filter(f => f.path.toLowerCase().indexOf(filter) >= 0 || f.contents.toLowerCase().indexOf(filter) >= 0)
+      : files
+
+    render(html`<${App} allFiles={${filtered}} search={${filter}} />`, document.body)
 
     // add in markdown
     document.getElementById('preview-contents').innerHTML = markdownRenderer.makeHtml(md)
 
     // render maths
     renderMathInElement(document.getElementById('preview-contents'), {
-      displayMode: true,
-      throwOnError: false, //allows katex to fail silently
-      errorColor: '#ff0000',
-      delimiters: [
-        { left: "$$", right: "$$", display: true },
-        { left: "$", right: "$", display: false }
-      ]
+      display: true,
+      throwOnError: false,
+      errorColor: '#ff0000'
     })
   }
 

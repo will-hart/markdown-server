@@ -2,13 +2,13 @@
 
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate serde_derive;
-#[macro_use] extern crate rocket_contrib;
+extern crate rocket_contrib;
 extern crate glob;
+extern crate open;
 
 use glob::glob;
-
-use rocket_contrib::json::{JsonValue};
 use rocket_contrib::templates::{Template};
+use rocket::config::{Config, Environment};
 use std::env;
 use std::fs;
 use std::io;
@@ -35,15 +35,23 @@ fn index() -> Template {
 }
 
 fn launchpad() -> rocket::Rocket {
-    rocket::ignite()
+    let config = Config::build(Environment::Production)
+        .address("localhost")
+        .port(8459)
+        .finalize()
+        .unwrap();
+
+    rocket::custom(config)
         .mount("/", routes![index])
         .attach(Template::fairing())
 }
 
 fn main() {
+    if !open::that("http://localhost:8459").is_ok() {
+        println!("Error opening browser");
+    }
     launchpad().launch();
 }
-
 
 fn get_folder_path() -> io::Result<String> {
     let app_dir = env::current_dir();
