@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 glob = "0.2"
+handlebars = "1.1.0"
 rocket = "0.4.0"
 serde = "1.0"
 serde_derive = "1.0"
@@ -15,4 +16,3 @@ open = "1.2.2"
 [dependencies.rocket_contrib]
 version = "0.4.0"
 default-features = false
-features = ["handlebars_templates", "json"]

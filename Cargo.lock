@@ -3,6 +3,7 @@ name = "RsMarkdownServer"
 version = "0.1.0"
 dependencies = [
  "glob 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "handlebars 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "open 1.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket_contrib 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -698,13 +699,9 @@ name = "rocket_contrib"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "glob 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
- "handlebars 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "notify 4.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 1.0.82 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_json 1.0.33 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

@@ -5,9 +5,11 @@
 extern crate rocket_contrib;
 extern crate glob;
 extern crate open;
+extern crate handlebars;
 
 use glob::glob;
-use rocket_contrib::templates::{Template};
+use handlebars::Handlebars;
+use rocket::response::content::Html;
 use rocket::config::{Config, Environment};
 use std::env;
 use std::fs;
@@ -26,10 +28,22 @@ struct TemplateContext {
 }
 
 #[get("/")]
-fn index() -> Template {
-    Template::render("index", &TemplateContext {
+fn index() -> Html<String> {
+    let index = include_str!("../templates/index.hbs");
+    let app = include_str!("../templates/app.hbs");
+    let styles = include_str!("../templates/styles.hbs");
+
+    let mut hb = Handlebars::new();
+    assert!(hb.register_template_string("index", index).is_ok());
+    assert!(hb.register_partial("app", app).is_ok());
+    assert!(hb.register_partial("styles", styles).is_ok());
+
+    Html(hb.render("index", &TemplateContext {
         files: serde_json::to_string(&get_docs()).unwrap()
-    })
+    }).expect("Expected a string template"))
+    // Template::render("index", &TemplateContext {
+    //     files: serde_json::to_string(&get_docs()).unwrap()
+    // })
 }
 
 fn launchpad() -> rocket::Rocket {
@@ -41,7 +55,6 @@ fn launchpad() -> rocket::Rocket {
 
     rocket::custom(config)
         .mount("/", routes![index])
-        .attach(Template::fairing())
 }
 
 fn main() {
