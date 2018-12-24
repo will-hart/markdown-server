@@ -1,0 +1,103 @@
+<script type="text/javascript">
+  const files = {{{ files }}} || []
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/showdown@1.9.0/dist/showdown.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha256-q01RVaHUJiYq9aq0FwkI6GAmMtOmRgToK8aEHHm4Xl8=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha256-CiPSQ9n316ms9u5yYJ092wI+FeybXvesfbnOUvSRvYA=" crossorigin="anonymous"></script>
+
+<script type="module" defer>
+  import { html, Component, render } from 'https://unpkg.com/htm/preact/standalone.mjs'
+
+  showdown.setFlavor('github')
+  const markdownRenderer = new showdown.Converter()
+  let filter = ''
+  let currentFile = null
+  const defaultPreview = '```\nSelect a document to continue\n```'
+
+  const changeFilter = e => {
+    console.log(e)
+    filter = e.target.value
+    renderApp()
+  }
+
+  class Search extends Component {
+    render (props, state) {
+      return html`<input type='text' class='search' placeholder='Filter Documents...' value={${filter}} onKeyDown={${e => changeFilter(e)}} />`
+    }
+  }
+
+  class FileItem extends Component {
+    render({ file }, state) {
+      return html`
+        <button class="file-list-item" onClick={${() => { currentFile = file; renderApp() }}}>
+          <span class="file-name">${file.path.split('\\').pop().split('/').pop()}</span>
+          <span class="file-contents">${file.contents.substring(0, 100)}...</span>
+        </button>
+      `
+    }
+  }
+
+  class SideBar extends Component {
+    render({ allFiles }, state) {
+      return html`
+        <div>
+          <div>
+            <${Search} />
+          </div>
+          <div>
+            ${allFiles.map(f => html`<${FileItem} file={${f}} />`)}
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  class Preview extends Component {
+    render(props, state) {
+      return html`
+        <div id='preview-contents'>
+          &nbsp;
+        </div>
+      `;
+    }
+  }
+
+  class App extends Component {
+    render ({ allFiles }, state) {
+      return html`
+        <div id="main" class="wrapper">
+          <div id="sidebar">
+            <${SideBar} allFiles={${files}} />
+          </div>
+          <div id="preview">
+            <${Preview} />
+          </div>
+        </div>
+      `
+    }
+  }
+
+  const renderApp = () => {
+    // render the application
+    let md = (currentFile || {}).contents || defaultPreview
+    render(html`<${App} allFiles={${files}} />`, document.body)
+
+    // add in markdown
+    document.getElementById('preview-contents').innerHTML = markdownRenderer.makeHtml(md)
+
+    // render maths
+    renderMathInElement(document.getElementById('preview-contents'), {
+      displayMode: true,
+      throwOnError: false, //allows katex to fail silently
+      errorColor: '#ff0000',
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    })
+  }
+
+  renderApp();
+</script>
