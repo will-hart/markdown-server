@@ -22,15 +22,13 @@ struct Document {
 
 #[derive(Serialize)]
 struct TemplateContext {
-    files: String,
-    parent: &'static str
+    files: String
 }
 
 #[get("/")]
 fn index() -> Template {
     Template::render("index", &TemplateContext {
-        files: serde_json::to_string(&get_docs()).unwrap(),
-        parent: "layout"
+        files: serde_json::to_string(&get_docs()).unwrap()
     })
 }
 
