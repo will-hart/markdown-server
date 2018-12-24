@@ -17,7 +17,7 @@
 
   let filter = ''
   let currentFile = null
-  const defaultPreview = '```\nSelect a document to continue\n```'
+  const defaultPreview = `Select a document to continue`
 
   const changeFilter = e => {
     filter = e.target.value
@@ -30,9 +30,10 @@
   }
 
   class FileItem extends Component {
-    render({ active, file }, state) {
+    render({ active, file, search }, state) {
+      const className = active ? 'file-list-item active' : 'file-list-item'
       return html`
-        <button class="${active ? 'file-list-item active' : 'file-list-item'}" onClick={${() => { currentFile = file; renderApp() }}}>
+        <button class="${className}" onClick={${() => { currentFile = file; renderApp() }}}>
           <span class="file-name">${file.path.split('\\').pop().split('/').pop()}</span>
           <span class="file-contents">${file.contents.substring(0, 100)}...</span>
         </button>
@@ -44,7 +45,8 @@
     render({ allFiles, search }, state) {
       return html`
         <div>
-          ${allFiles.map(f => html`<${FileItem} active={${f == currentFile}} file={${f}} />`)}
+          ${allFiles.length === 0 && html`<div class="warning">There are no files in the directory</div>`}
+          ${allFiles.map(f => html`<${FileItem} active={${f == currentFile}} file={${f}} search={${search}} />`)}
         </div>
       `;
     }
@@ -84,25 +86,30 @@
 
     // filter files
     const filtered = filter.length > 0
-      ? files.filter(f => f.path.toLowerCase().indexOf(filter) >= 0 || f.contents.toLowerCase().indexOf(filter) >= 0)
+      ? files.filter(f => f.path.toLowerCase().indexOf(filter.toLowerCase()) >= 0 ||
+          f.contents.toLowerCase().indexOf(filter.toLowerCase()) >= 0)
       : files
 
     render(html`<${App} allFiles={${filtered}} search={${filter}} />`, document.body)
 
     // add in markdown
-    document.getElementById('preview-contents').innerHTML = markdownRenderer.makeHtml(md)
+    if (currentFile) {
+      document.getElementById('preview-contents').innerHTML = markdownRenderer.makeHtml(md)
 
-    // render maths
-    renderMathInElement(document.getElementById('preview-contents'), {
-      display: true,
-      throwOnError: false,
-      errorColor: '#ff0000',
-      delimiters: [
-        {left: "$$", right: "$$", display: true},
-        {left: "$$\n", right: "\n$$", display: true},
-        {left: "$", right: "$", display: false},
-      ]
-    })
+      // render maths
+      renderMathInElement(document.getElementById('preview-contents'), {
+        display: true,
+        throwOnError: false,
+        errorColor: '#ff0000',
+        delimiters: [
+          {left: "$$", right: "$$", display: true},
+          {left: "$$\n", right: "\n$$", display: true},
+          {left: "$", right: "$", display: false},
+        ]
+      })
+    } else {
+      document.getElementById('preview-contents').innerHTML = `<div class="hint">${md}</div>`
+    }
   }
 
   renderApp();

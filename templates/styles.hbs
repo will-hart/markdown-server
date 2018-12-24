@@ -7,6 +7,13 @@
   body { background: white; margin: 1em; line-height: 1.5; }
   h1, h2, h3, h4, h5, h6 { font-family: 'Roboto', sans-serif; }
 
+  ::selection { background: #c7e2ff; }
+
+  li > p {
+    padding: 0em;
+    margin: 0.3em;
+  }
+
   #main { position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; display: flex; flex-direction: column; }
   .search { border: 0; outline: none; box-sizing: border-box; padding: 15px; width: 100%; font-size: 1.3em; background: #444; color: #EEE; height: 55px; }
   .wrapper { display: flex; flex-direction: row; max-height: calc(100vh - 55px); }
@@ -17,11 +24,12 @@
 
   .file-list-item { font-size: 0.9em; width: 100%; background: none; border: 0; text-align: left; padding: 1em; }
   .file-list-item:hover { background: #DDD; }
-  .file-list-item.active { background: #CCC; }
+  .file-list-item.active { background: #c7e2ff; }
   .file-name { font-weight: bold; display: block; }
   .file-contents { color: #777; }
   .item-count { font-size: 0.8em; position: absolute; top: 0; right: 0; color: #777; padding: 1em; }
-  .warning { margin: auto; box-sizing: border-box; width: 90%; padding: 5%; background: rgba(200, 40, 40, 0.3); color: #AA2222; font-size: 0.9em; margin-top: 2em; }
+  .hint, .warning { margin: auto; box-sizing: border-box; width: 90%; padding: 2em; background: rgba(200, 40, 40, 0.3); color: #AA2222; font-size: 0.9em; margin-top: 2em; }
+  .hint { background: rgba(77, 74, 74, 0.2); color: rgb(92, 88, 88); }
 
   .footnote-definition-label { float:left; padding-right: 1em; font-size: 0.8em; }
   .footnote-definition-label:before { content: '['; }

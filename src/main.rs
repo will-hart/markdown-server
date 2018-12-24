@@ -41,9 +41,6 @@ fn index() -> Html<String> {
     Html(hb.render("index", &TemplateContext {
         files: serde_json::to_string(&get_docs()).unwrap()
     }).expect("Expected a string template"))
-    // Template::render("index", &TemplateContext {
-    //     files: serde_json::to_string(&get_docs()).unwrap()
-    // })
 }
 
 fn launchpad() -> rocket::Rocket {
