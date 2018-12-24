@@ -28,9 +28,9 @@
   }
 
   class FileItem extends Component {
-    render({ file }, state) {
+    render({ active, file }, state) {
       return html`
-        <button class="file-list-item" onClick={${() => { currentFile = file; renderApp() }}}>
+        <button class="${active ? 'file-list-item active' : 'file-list-item'}" onClick={${() => { currentFile = file; renderApp() }}}>
           <span class="file-name">${file.path.split('\\').pop().split('/').pop()}</span>
           <span class="file-contents">${file.contents.substring(0, 100)}...</span>
         </button>
@@ -42,7 +42,7 @@
     render({ allFiles, search }, state) {
       return html`
         <div>
-          ${allFiles.map(f => html`<${FileItem} file={${f}} />`)}
+          ${allFiles.map(f => html`<${FileItem} active={${f == currentFile}} file={${f}} />`)}
         </div>
       `;
     }
