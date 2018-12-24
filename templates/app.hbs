@@ -11,8 +11,10 @@
 <script type="module" defer>
   import { html, Component, render } from 'https://unpkg.com/htm/preact/standalone.mjs'
 
+
   showdown.setFlavor('github')
   const markdownRenderer = new showdown.Converter()
+
   let filter = ''
   let currentFile = null
   const defaultPreview = '```\nSelect a document to continue\n```'
@@ -94,7 +96,12 @@
     renderMathInElement(document.getElementById('preview-contents'), {
       display: true,
       throwOnError: false,
-      errorColor: '#ff0000'
+      errorColor: '#ff0000',
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$$\n", right: "\n$$", display: true},
+        {left: "$", right: "$", display: false},
+      ]
     })
   }
 
